@@ -1,13 +1,15 @@
 from typing import List
 from dataclasses import dataclass, astuple
 
-    
 MATH_OPS = {
     "+": "PLUS", 
     "-": "MINUS", 
     "*": "MULT", 
     "/": "DIV"
 }
+
+# expression to parse
+expression = "1 + 2"
 
 @dataclass
 class Token:
@@ -24,9 +26,6 @@ class BinOp:
     op: str
     right: Num 
 
-# TODO: THIS SEEMS UNNECESSARY; TO REFACTOR
-def make_tuple_from_token_helper(a: str, b:str) -> tuple:
-    return astuple(Token(token_type=a, token_value=b))
     
 def tokenize(text: str) -> list[Token]:
     result = []
@@ -40,28 +39,29 @@ def tokenize(text: str) -> list[Token]:
             while i < len(text) and text[i].isdigit(): 
                 full_digit += text[i]
                 i += 1       
-            p = make_tuple_from_token_helper(a="NUM", b=full_digit)
+            p = Token(token_type="NUM", token_value=full_digit)
             result.append(p)
             
         elif text[i] in MATH_OPS:
-            p = make_tuple_from_token_helper(a=MATH_OPS[text[i]], b=text[i])
+            p = Token(token_type=MATH_OPS[text[i]], token_value=text[i])
             result.append(p)
             i += 1
     return result
-tokens = tokenize("1 + 2")
-print(tokens)
+
+tokens = tokenize(expression)
+print(f"Tokens: {tokens}\n")
 
 # print(f"value of first token: {tokens[0][1]}\n")
 def parse_tokens(t: List[Token]):
-    first_node = Num(value=int(t[0][1]))
+    first_node = Num(value=int(t[0].token_value))
     # return first_node
     
     # impl binop and return it
     return BinOp(
-        left= Num(value=int(t[0][1])),
-        right= Num(value=int(t[2][1])),
-        op= t[1][0])
+        left= Num(value=int(t[0].token_value)),
+        right= Num(value=int(t[2].token_value)),
+        op= t[1].token_type)
     
 print(f"parsing tokens: {parse_tokens(tokens)}")
 
-[('NUM', '1'), ('PLUS', '+'), ('NUM', '2')]
+# [('NUM', '1'), ('PLUS', '+'), ('NUM', '2')]
